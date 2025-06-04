@@ -5,8 +5,8 @@ import java.time.LocalDate;
 public class Eveniment {
     private int id;
     private String nume;
-    private int codCategorie; // FK spre categorii.id
-    private int codLocatie;   // FK spre locatii.id
+    private int codCategorie; // FK - categorii.id agregare
+    private int codLocatie;   // FK - locatii.id
     private LocalDate data;
 
     public Eveniment(int id, String nume, int codCategorie, int codLocatie, LocalDate data) {

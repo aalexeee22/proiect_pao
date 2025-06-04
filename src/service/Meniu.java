@@ -11,6 +11,8 @@ public class Meniu {
         Scanner scanner = new Scanner(System.in);
         boolean running = true;
 
+        ActiuneLogger.log("start_aplicatie");
+
         while (running) {
             System.out.println("\n--- Bine ai venit ---");
             System.out.println("1. Utilizator");
@@ -74,11 +76,11 @@ public class Meniu {
                         ActiuneLogger.log("vizualizare_categorii");
                     }
                     case "2" -> {
-                        afiseazaLista("locații", service.locatieRepo.getLocatii());
+                        afiseazaLista("locații", service.getLocatii());
                         ActiuneLogger.log("vizualizare_locatii");
                     }
                     case "3" -> {
-                        afiseazaLista("evenimente", service.evenimentRepo.getEvenimente());
+                        afiseazaLista("evenimente", service.getEvenimente());
                         ActiuneLogger.log("vizualizare_evenimente");
                     }
                     case "0" -> {
@@ -112,14 +114,14 @@ public class Meniu {
                         System.out.print("Parolă: ");
                         String parola = scanner.nextLine();
 
-                        Utilizator utilizator = service.utilizatorRepo.getUtilizatori().stream()
+                        Utilizator utilizator = service.getUtilizatori().stream()
                                 .filter(u -> u.getEmail().equals(email) && u.getParola().equals(parola))
                                 .findFirst().orElse(null);
 
                         if (utilizator == null) {
                             System.out.println("Autentificare eșuată.");
                         } else {
-                            clientLogat = service.clientRepo.getClienti().stream()
+                            clientLogat = service.getClienti().stream()
                                     .filter(c -> c.getUtilizator().getId() == utilizator.getId())
                                     .findFirst().orElse(null);
                             if (clientLogat == null) {
@@ -133,7 +135,7 @@ public class Meniu {
                     case "2" -> {
                         System.out.print("ID utilizator existent: ");
                         int uid = Integer.parseInt(scanner.nextLine());
-                        Utilizator utilizator = service.utilizatorRepo.getUtilizatori().stream()
+                        Utilizator utilizator = service.getUtilizatori().stream()
                                 .filter(u -> u.getId() == uid)
                                 .findFirst().orElse(null);
                         if (utilizator == null) {
@@ -144,7 +146,7 @@ public class Meniu {
                         String nume = scanner.nextLine();
                         System.out.print("Prenume: ");
                         String prenume = scanner.nextLine();
-                        service.clientRepo.adaugaClient(new Client(0, utilizator, nume, prenume));
+                        service.adaugaClient(new Client(0, utilizator, nume, prenume));
                         ActiuneLogger.log("creare_client");
                         System.out.println("Client creat.");
                     }
@@ -173,7 +175,7 @@ public class Meniu {
                         String tip = scanner.nextLine();
                         System.out.print("Preț: ");
                         double pret = Double.parseDouble(scanner.nextLine());
-                        service.categorieRepo.adaugaCategorie(new Categorie(0, tip, pret));
+                        service.adaugaCategorie(new Categorie(0, tip, pret));
                         ActiuneLogger.log("adauga_categorie");
                     }
                     case "2" -> {
@@ -181,7 +183,7 @@ public class Meniu {
                         String nume = scanner.nextLine();
                         System.out.print("Adresă: ");
                         String adresa = scanner.nextLine();
-                        service.locatieRepo.adaugaLocatie(new Locatie(0, nume, adresa));
+                        service.adaugaLocatie(new Locatie(0, nume, adresa));
                         ActiuneLogger.log("adauga_locatie");
                     }
                     case "3" -> {
@@ -189,11 +191,19 @@ public class Meniu {
                         String nume = scanner.nextLine();
                         System.out.print("ID categorie: ");
                         int cat = Integer.parseInt(scanner.nextLine());
+                        if (service.getCategorii().stream().noneMatch(c -> c.getId() == cat)) {
+                            System.out.println("Categoria nu există.");
+                            break;
+                        }
                         System.out.print("ID locație: ");
                         int loc = Integer.parseInt(scanner.nextLine());
+                        if (service.getLocatii().stream().noneMatch(l -> l.getId() == loc)) {
+                            System.out.println("Locația nu există.");
+                            break;
+                        }
                         System.out.print("Dată (YYYY-MM-DD): ");
                         LocalDate data = LocalDate.parse(scanner.nextLine());
-                        service.evenimentRepo.adaugaEveniment(new Eveniment(0, nume, cat, loc, data));
+                        service.adaugaEveniment(new Eveniment(0, nume, cat, loc, data));
                         ActiuneLogger.log("adauga_eveniment");
                     }
                     case "4" -> {
@@ -201,19 +211,19 @@ public class Meniu {
                         ActiuneLogger.log("vizualizare_categorii");
                     }
                     case "5" -> {
-                        afiseazaLista("locații", service.locatieRepo.getLocatii());
+                        afiseazaLista("locații", service.getLocatii());
                         ActiuneLogger.log("vizualizare_locatii");
                     }
                     case "6" -> {
-                        afiseazaLista("utilizatori", service.utilizatorRepo.getUtilizatori());
+                        afiseazaLista("utilizatori", service.getUtilizatori());
                         ActiuneLogger.log("vizualizare_utilizatori");
                     }
                     case "7" -> {
-                        afiseazaLista("clienți", service.clientRepo.getClienti());
+                        afiseazaLista("clienți", service.getClienti());
                         ActiuneLogger.log("vizualizare_clienti");
                     }
                     case "8" -> {
-                        afiseazaLista("evenimente", service.evenimentRepo.getEvenimente());
+                        afiseazaLista("evenimente", service.getEvenimente());
                         ActiuneLogger.log("vizualizare_evenimente");
                     }
                     case "9" -> {
@@ -225,7 +235,7 @@ public class Meniu {
                     case "10" -> {
                         System.out.print("ID eveniment de editat: ");
                         int id = Integer.parseInt(scanner.nextLine());
-                        Eveniment existent = service.evenimentRepo.getEvenimente().stream()
+                        Eveniment existent = service.getEvenimente().stream()
                                 .filter(e -> e.getId() == id).findFirst().orElse(null);
                         if (existent == null) {
                             System.out.println("Evenimentul nu există.");
@@ -236,14 +246,14 @@ public class Meniu {
                         if (nume.isBlank()) nume = existent.getNume();
                         System.out.print("ID categorie: ");
                         String catStr = scanner.nextLine();
-                        int cat = catStr.isBlank() ? existent.getCodCategorie() : Integer.parseInt(catStr);
+                        int codCat = catStr.isBlank() ? existent.getCodCategorie() : Integer.parseInt(catStr);
                         System.out.print("ID locație: ");
                         String locStr = scanner.nextLine();
-                        int loc = locStr.isBlank() ? existent.getCodLocatie() : Integer.parseInt(locStr);
+                        int codLoc = locStr.isBlank() ? existent.getCodLocatie() : Integer.parseInt(locStr);
                         System.out.print("Dată nouă: ");
                         String dataStr = scanner.nextLine();
                         LocalDate data = dataStr.isBlank() ? existent.getData() : LocalDate.parse(dataStr);
-                        service.editeazaEveniment(new Eveniment(id, nume, cat, loc, data));
+                        service.editeazaEveniment(new Eveniment(id, nume, codCat, codLoc, data));
                         ActiuneLogger.log("editeaza_eveniment");
                     }
                     case "0" -> {
@@ -266,7 +276,7 @@ public class Meniu {
     }
 
     public static void afiseazaCategoriiSortate(AplicatieService service) {
-        List<Categorie> categorii = service.categorieRepo.getCategorii();
+        List<Categorie> categorii = service.getCategorii();
         if (categorii.isEmpty()) {
             System.out.println("Nu există categorii înregistrate.");
             return;

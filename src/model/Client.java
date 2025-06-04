@@ -3,7 +3,7 @@ package model;
 import model.Utilizator;
 public class Client extends Persoana {
     private int id;
-    private Utilizator utilizator; // compoziție
+    private Utilizator utilizator; // compozitie
 
     public Client(int id, Utilizator utilizator, String nume, String prenume) {
         super(nume, prenume);

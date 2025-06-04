@@ -12,7 +12,7 @@ public class ClientRepository {
         String sql = "INSERT INTO clienti (cod_utilizator, nume, prenume) VALUES (?, ?, ?)";
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setInt(1, c.getUtilizator().getId()); // utilizator compus
+            stmt.setInt(1, c.getUtilizator().getId());
             stmt.setString(2, c.getNume());
             stmt.setString(3, c.getPrenume());
             stmt.executeUpdate();
@@ -33,7 +33,6 @@ public class ClientRepository {
                 String nume = rs.getString("nume");
                 String prenume = rs.getString("prenume");
 
-                // interogăm tabelul utilizatori pentru a obține obiectul
                 Utilizator utilizator = getUtilizatorById(codUtilizator, conn);
                 if (utilizator != null) {
                     Client c = new Client(id, utilizator, nume, prenume);
